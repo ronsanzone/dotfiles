@@ -27,4 +27,5 @@ This assumes that our dotfiles package is in `~/code/dotfiles/`
 ```
 ln -s ~/code/dotfiles/phoenix/.phoenix.js ~/.phoenix.js
 
+ln -s ~/code/dotfiles/tmux/tmux.conf ~/.config/tmux/tmux.conf
 ```
