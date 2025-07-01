@@ -134,3 +134,6 @@ export PATH="$PATH:/Users/ron.sanzone/code/mongohouse/artifacts/mongod-versions/
 eval "$(oh-my-posh init zsh --config $(brew --prefix oh-my-posh)/themes/star.omp.json)"
 
 
+
+# Added by Windsurf
+export PATH="/Users/ron.sanzone/.codeium/windsurf/bin:$PATH"

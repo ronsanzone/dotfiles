@@ -12,6 +12,8 @@ brew install --cask phoenix
 
 brew install tmux
 
+brew install fzf
+
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/c
@@ -43,9 +45,13 @@ ln -s ~/code/dotfiles/zsh/.zshrc ~/.zshrc
 
 ln -s ~/code/dotfiles/phoenix/.phoenix.js ~/.phoenix.js
 
+mkdir ~/.config/tmux
 ln -s ~/code/dotfiles/tmux/tmux.conf ~/.config/tmux/tmux.conf
+ln -s ~/code/dotfiles/tmux/tmux-sessionizer.conf ~/.config/tmux-sessionizer/tmux-sessionizer.conf
 
+mkdir ~/.config/kitty
 ln -s ~/code/dotfiles/kitty/kitty.conf ~/.config/kitty/kitty.conf
+
 ```
 
 ## Install Random Tools
