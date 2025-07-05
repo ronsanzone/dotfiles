@@ -131,9 +131,10 @@ export PATH="$PATH:/Users/ron.sanzone/code/mongohouse/artifacts/mongod-versions/
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 #
 #eval "$(oh-my-posh init zsh)"
-eval "$(oh-my-posh init zsh --config $(brew --prefix oh-my-posh)/themes/star.omp.json)"
-
-
+eval "$(oh-my-posh init zsh --config $(brew --prefix oh-my-posh)/themes/pure.omp.json)"
 
 # Added by Windsurf
 export PATH="/Users/ron.sanzone/.codeium/windsurf/bin:$PATH"
+
+export PATH="$PATH:$(go env GOPATH)/bin"
+
