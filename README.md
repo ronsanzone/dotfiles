@@ -14,6 +14,8 @@ brew install tmux
 
 brew install fzf
 
+brew install --cask nikitabobko/tap/aerospace
+
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/c
@@ -51,6 +53,15 @@ ln -s ~/code/dotfiles/tmux/tmux-sessionizer.conf ~/.config/tmux-sessionizer/tmux
 
 mkdir ~/.config/kitty
 ln -s ~/code/dotfiles/kitty/kitty.conf ~/.config/kitty/kitty.conf
+
+mkdir ~/.config/aerospace
+ln -s ~/code/dotfiles/aerospace/aerospace.toml ~/.config/aerospace/aerospace.toml
+
+rm -r ~/.claude/settings.local.json && ln -s  ~/code/dotfiles/claude/settings.local.json ~/.claude/settings.local.json
+rm -r ~/.claude/settings.json && ln -s  ~/code/dotfiles/claude/settings.json ~/.claude/settings.json
+rm -r  ~/.claude/agents && ln -s  ~/code/dotfiles/claude/agents ~/.claude/agents
+rm -r  ~/.claude/commands && ln -s  ~/code/dotfiles/claude/commands ~/.claude/commands
+rm -r  ~/.claude/CLAUDE.md && ln -s  ~/code/dotfiles/claude/CLAUDE.md ~/.claude/CLAUDE.md
 
 ```
 

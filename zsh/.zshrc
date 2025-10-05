@@ -138,3 +138,37 @@ export PATH="/Users/ron.sanzone/.codeium/windsurf/bin:$PATH"
 
 export PATH="$PATH:$(go env GOPATH)/bin"
 
+## MongoDB related functions and aliases
+
+mclaude() {
+  	if ! aws sts get-caller-identity --profile ai-prod-llm 2>/dev/null | jq -e '.Account' >/dev/null 2>&1; then
+    	aws sso login --profile ai-prod-llm
+  	fi
+	export ANTHROPIC_DEFAULT_OPUS_MODEL="us.anthropic.claude-opus-4-1-20250805-v1:0"
+	export ANTHROPIC_DEFAULT_HAIKU_MODEL="us.anthropic.claude-3-5-haiku-20241022-v1:0"
+	#export ANTHROPIC_DEFAULT_SONNET_MODEL="global.anthropic.claude-sonnet-4-5-20250929-v1:0"
+	export ANTHROPIC_DEFAULT_SONNET_MODEL="us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+	export CLAUDE_CODE_SUBAGENT_MODEL="us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+	unset ANTHROPIC_MODEL
+  	export AWS_DEFAULT_REGION='us-east-1'
+  	export AWS_PROFILE='ai-prod-llm'
+  	export CLAUDE_CODE_USE_BEDROCK=1
+
+  	claude $*
+}
+
+
+## Mongohouse functions and aliases 
+
+mhtp() {
+	echo "Running mhouse tests under path $1"
+ 	go run ./cmd/buildscript/build.go test:unit -pkg=$1/...
+}
+
+
+fpath[1,0]=$HOME/.zsh/completion
+
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "/Users/ron.sanzone"/.zsh/cache
+. /Users/ron.sanzone/.asdf/asdf.sh
+. /Users/ron.sanzone/.asdf/plugins/java/set-java-home.zsh

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(gofmt:*)",
+      "Bash(go build:*)",
+      "Bash(go test:*)",
+      "Bash(goimports:*)",
+      "Bash(go run:*)",
+      "Bash(grep:*)",
+      "Bash(./.claude/hooks/go-lint-format.sh:*)",
+      "Bash(mkdir:*)",
+      "Bash(git mv:*)"
+    ],
+    "deny": []
+  },
+  "outputStyle": "Explanatory"
+}
