@@ -1,0 +1,78 @@
+#!/usr/bin/env zsh
+
+# Script to initialize a git worktree for parallel Claude Code work
+# Usage: ./init-worktree.sh <ticket-id> <short-description>
+
+# Check if correct number of arguments provided
+if [[ $# -ne 2 ]]; then
+    echo "Error: Script requires exactly 2 arguments"
+    echo "Usage: $0 <ticket-id> <short-description>"
+    echo "Example: $0 MHOUSE-1234 'foo bar baz'"
+    exit 1
+fi
+
+# Get arguments
+TICKET_ID="$1"
+SHORT_DESC="$2"
+
+# Create branch name
+# 1. Convert to lowercase
+# 2. Replace spaces with hyphens
+# 3. Combine ticket and description
+BRANCH_NAME=$(echo "${TICKET_ID}-${SHORT_DESC}" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+
+echo "Creating worktree with branch: $BRANCH_NAME"
+
+# Get the current directory name (project directory)
+PROJECT_DIR=$(basename "$PWD")
+
+# Get the parent directory path
+PARENT_DIR="../"
+
+# Full path for the new worktree (includes project name prefix)
+WORKTREE_DIR="${PARENT_DIR}${PROJECT_DIR}-${BRANCH_NAME}"
+
+# Check if worktree already exists
+if [[ -d "$WORKTREE_DIR" ]]; then
+    echo "Error: Worktree directory already exists: $WORKTREE_DIR"
+    exit 1
+fi
+
+# Create the git worktree
+echo "Creating worktree in: $WORKTREE_DIR"
+git worktree add "$WORKTREE_DIR" -b "$BRANCH_NAME" || {
+    echo "Error: Failed to create git worktree"
+    exit 1
+}
+
+# Check if .claude/settings.local.json exists in current project
+if [[ -f ".claude/settings.local.json" ]]; then
+    echo "Moving .claude/settings.local.json to new worktree..."
+
+    # Ensure .claude directory exists in new worktree
+    mkdir -p "${WORKTREE_DIR}/.claude"
+
+    # Copy the settings file
+    cp ".claude/settings.local.json" "${WORKTREE_DIR}/.claude/settings.local.json" || {
+        echo "Warning: Failed to move .claude/settings.local.json"
+    }
+else
+    echo "Note: .claude/settings.local.json not found in current directory"
+fi
+
+# Change to the new worktree directory
+echo "Changing to worktree directory: $WORKTREE_DIR"
+cd "$WORKTREE_DIR"
+
+echo ""
+echo "✓ Worktree successfully created!"
+echo "  Project: $PROJECT_DIR"
+echo "  Branch: $BRANCH_NAME"
+echo "  Directory: $(basename "$WORKTREE_DIR")"
+echo "  Location: $(pwd)"
+echo ""
+echo "To return to this worktree later, use:"
+echo "  cd $WORKTREE_DIR"
+echo ""
+echo "To remove this worktree when done, use:"
+echo "  git worktree remove $WORKTREE_DIR"

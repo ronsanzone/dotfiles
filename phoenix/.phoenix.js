@@ -42,6 +42,34 @@ Window.topHalf = function() {
 	toGrid(0, 0, 1, 0.5)
 }
 
+// Ultrawide grids
+Window.firstThird = function() {
+	toGrid(0, 0, 0.333, 1)
+}
+
+Window.secondThird = function() {
+	toGrid(0.333, 0, 0.333, 1)
+}
+
+Window.thirdThird = function() {
+	toGrid(0.666, 0, 0.333, 1)
+}
+
+Window.firstQuarter = function() {
+	toGrid(0, 0, 0.25, 1)
+}
+
+Window.secondQuarter = function() {
+	toGrid(0.25, 0, 0.25, 1)
+}
+
+Window.thirdQuarter = function() {
+	toGrid(0.50, 0, 0.25, 1)
+}
+
+Window.fourthQuarter = function() {
+	toGrid(0.75, 0, 0.25, 1)
+}
 
 Window.throwWindow = function() {
 	var win = Window.focused()
@@ -75,6 +103,29 @@ Window.throwWindowBack = function() {
 	win.setFrame(opts)
 }
 
+Window.shrink = function(up) {
+	var win = Window.focused()
+	var winFrame = win.frame()
+	var current = win.screen().flippedVisibleFrame()
+
+	var opts = {
+		x: winFrame.x,
+		y: winFrame.y,
+		width: winFrame.width,
+		height: current.height / 2,
+
+	}
+	win.setFrame(opts)
+}
+
+Window.shrinkUp = function() {
+	shrink(true)
+}
+
+Window.shrinkDown = function() {
+	shrink(false)
+}
+
 // Rotate current window between monitors
 keys.push(new Key('s', modifiers, Window.throwWindow))
 keys.push(new Key('d', modifiers, Window.throwWindowBack))
@@ -87,3 +138,15 @@ keys.push(new Key('l', modifiers, Window.rightHalf))
 keys.push(new Key('j', modifiers, Window.bottomHalf))
 keys.push(new Key('k', modifiers, Window.topHalf))
 
+// Ultrawide specific
+keys.push(new Key('y', modifiers, Window.firstThird))
+keys.push(new Key('u', modifiers, Window.secondThird))
+keys.push(new Key('i', modifiers, Window.thirdThird))
+
+keys.push(new Key('n', modifiers, Window.firstQuarter))
+keys.push(new Key('m', modifiers, Window.secondQuarter))
+keys.push(new Key(',', modifiers, Window.thirdQuarter))
+keys.push(new Key('.', modifiers, Window.fourthQuarter))
+
+keys.push(new Key('o', modifiers, Window.shrinkUp))
+keys.push(new Key('p', modifiers, Window.shrinkDown))

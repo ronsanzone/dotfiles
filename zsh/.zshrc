@@ -93,9 +93,24 @@ ZSH_AUTOSUGGEST_USE_ASYNC=1
 
 # User configuration
 
+export EDITOR=nvim
+
 export MONGOHOUSE_SETENV_ENABLED=1
 export MONGOHOUSE_SETENV_SSO_PROFILE=adfa-dev
 
+export ARGO_SERVER='argo-workflows.corp.mongodb.com:443'
+export ARGO_HTTP1=true
+export ARGO_SECURE=true
+export ARGO_BASE_HREF=
+export ARGO_NAMESPACE=argo-workflows-executions-mongohouse-mgmt
+
+export KUBECONFIG="/Users/ron.sanzone/code/kube-resources/.kube/config:/Users/ron.sanzone/.kube/config"
+export PATH="${PATH}:${KREW_ROOT:-$HOME/.krew}/bin"
+
+export PATH="$HOME/bin:$PATH"
+
+export ASDF_DATA_DIR=/Users/ron.sanzone/.asdf
+export PATH="$ASDF_DATA_DIR/shims:$PATH"
 
 export ZK_NOTEBOOK_DIR=~/notes/sanzoner-mongodb-notes/
 
@@ -133,9 +148,6 @@ export PATH="$PATH:/Users/ron.sanzone/code/mongohouse/artifacts/mongod-versions/
 #eval "$(oh-my-posh init zsh)"
 eval "$(oh-my-posh init zsh --config $(brew --prefix oh-my-posh)/themes/pure.omp.json)"
 
-# Added by Windsurf
-export PATH="/Users/ron.sanzone/.codeium/windsurf/bin:$PATH"
-
 export PATH="$PATH:$(go env GOPATH)/bin"
 
 ## MongoDB related functions and aliases
@@ -153,7 +165,9 @@ mclaude() {
   	export AWS_DEFAULT_REGION='us-east-1'
   	export AWS_PROFILE='ai-prod-llm'
   	export CLAUDE_CODE_USE_BEDROCK=1
-
+	# Recommended output token settings for Bedrock
+	export CLAUDE_CODE_MAX_OUTPUT_TOKENS=8192
+	export MAX_THINKING_TOKENS=2048
   	claude $*
 }
 
@@ -170,5 +184,5 @@ fpath[1,0]=$HOME/.zsh/completion
 
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "/Users/ron.sanzone"/.zsh/cache
-. /Users/ron.sanzone/.asdf/asdf.sh
+# . /Users/ron.sanzone/.asdf/asdf.sh
 . /Users/ron.sanzone/.asdf/plugins/java/set-java-home.zsh
