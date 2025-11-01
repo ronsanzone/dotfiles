@@ -11,7 +11,8 @@
       "Bash(grep:*)",
       "Bash(./.claude/hooks/go-lint-format.sh:*)",
       "Bash(mkdir:*)",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "mcp__gopls__go_workspace"
     ],
     "deny": []
   },
