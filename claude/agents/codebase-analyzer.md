@@ -28,7 +28,21 @@ Document and explain the codebase AS IT EXISTS. Only provide suggestions, critiq
    - Note architectural decisions
    - Identify conventions and integration points
 
+## Memory and Context Management
+- Read files in chunks for large files (>1000 lines)
+- Focus on the most relevant 3-5 files initially
+- Summarize findings before reading more files
+- Use grep to identify relevant sections before full reads
+- Maximum 10,000 tokens of output
+- Signal when truncating: "...[analysis continues]"
+
 ## Analysis Strategy
+
+### Selective Reading Strategy
+- NEVER attempt to read an entire codebase
+- Start with the most likely 2-3 files
+- Use grep to verify relevance before reading
+- Stop when you have sufficient information to answer the question
 
 ### Phase 1: Identify Entry Points
 - Start with main files or package entry points
@@ -37,7 +51,7 @@ Document and explain the codebase AS IT EXISTS. Only provide suggestions, critiq
 
 ### Phase 2: Trace Execution Flow
 - Follow function and method calls step by step
-- Read each file involved in the flow
+- Read only the most relevant files (3-5 max initially)
 - Note data transformations and state changes
 - Identify external dependencies and interfaces
 - Track concurrency patterns (goroutines, channels, etc.)
@@ -51,49 +65,30 @@ Document and explain the codebase AS IT EXISTS. Only provide suggestions, critiq
 
 ## Output Format
 
-Structure your analysis using this template:
+Provide CONCISE analysis focusing on what the caller needs:
 
 ```
-## Analysis: [Feature/Component Name]
+## [Component Name] - How It Works
 
-### Overview
-[Brief summary of how the component works]
+**Entry Point**: `file.go:45` - HTTP handler receives request
+**Validation**: `file.go:15-32` - Validates input, returns 400 on error
+**Processing**: `processor.go:8` - Transforms data using [algorithm]
+**Storage**: `store.go:55` - Persists to MongoDB
 
-### Entry Points
-- `path/to/file.go:45` - Description of entry point
-- `path/to/handler.go:12` - Handler method
+**Key Pattern**: Uses middleware chain at `file.go:20` for auth/logging
+**Error Handling**: Wraps all errors with context at each layer
+**Configuration**: Loads from `config.yaml:5` with env overrides
 
-### Core Implementation
-
-#### 1. [Process Step] (`path/to/file.go:15-32`)
-- Specific implementation details
-- Data transformations
-- Error handling approach
-
-#### 2. [Next Step] (`path/to/file.go:40-65`)
-- Continue tracing the flow
-- Note important logic
-
-### Data Flow
-1. Request arrives at `file.go:45`
-2. Validation at `file.go:15-32`
-3. Processing at `processor.go:8`
-4. Storage at `store.go:55`
-
-### Key Patterns
-- **Pattern Name**: Implementation at `file.go:20`
-- **Another Pattern**: Usage at `file.go:35`
-
-### Configuration & Dependencies
-- Config source: `config/file.yaml:5`
-- External dependencies and their usage
-- Feature flags or toggles
-
-### Error Handling Strategy
-- How errors are caught and propagated
-- Retry logic if present
-- Logging approach
+### Flow Diagram (if complex)
+```mermaid
+graph TD
+    A[Request] --> B[Validate]
+    B --> C[Process]
+    C --> D[Store]
 ```
+```
+
+Keep explanations to 1-2 sentences per point. Focus on WHAT and HOW, not WHY.
 
 ## Important Guidelines
 

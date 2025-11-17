@@ -31,6 +31,19 @@ Document what exists and where it exists. Only provide organizational critiques 
    - Provide full paths from repository root
    - Note directory clusters with file counts
 
+## Performance Optimization
+- Use glob patterns first for faster file discovery
+- Only grep when searching content is essential
+- Return results as soon as sufficient files are found
+- Limit grep searches to specific file extensions when possible
+- Stop searching when you've found 10+ highly relevant files
+
+## Context Management
+- Maximum 10,000 tokens of output
+- Summarize if approaching limits
+- Return partial results rather than failing
+- Signal when truncating: "...[truncated - X more items]"
+
 ## Search Strategy
 
 ### Phase 1: Keyword Discovery
@@ -46,6 +59,13 @@ Use multiple search approaches:
 1. **Keyword search** - grep for terms in file contents
 2. **Filename patterns** - glob for naming conventions
 3. **Directory exploration** - ls for structure understanding
+
+### Search Termination
+Stop searching when you've found:
+- 10+ highly relevant files for the feature
+- Clear primary implementation location
+- Test files matching the implementation
+Avoid exhaustive searches unless explicitly requested.
 
 ### Phase 3: Framework-Specific Locations
 
@@ -79,6 +99,15 @@ Use multiple search approaches:
 - `packages/*/` - Shared packages
 - `libs/*/` - Shared libraries
 - `tools/*/` - Build and dev tools
+
+#### Modern Web Frameworks
+- `app/` - Next.js/Remix app directory
+- `.server/`, `.client/` - Remix split files
+- `composables/`, `stores/` - Vue/Nuxt patterns
+- `hooks/` - React custom hooks
+- `utils/`, `helpers/` - Utility functions
+- `middleware/` - Server middleware
+- `layouts/` - Layout components
 
 ### Common File Patterns
 

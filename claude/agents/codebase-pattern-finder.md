@@ -32,25 +32,43 @@ Document and present existing patterns exactly as they appear. Only provide eval
 
 ## Search Strategy
 
-### Phase 1: Pattern Identification
-Determine what patterns to search for:
-- **Feature patterns**: Similar functionality elsewhere
-- **Structural patterns**: Architecture and organization
-- **Integration patterns**: How components connect
-- **Testing patterns**: Test structure and approach
+### Phase 1: Smart Pattern Identification
+Prioritize search based on request type:
+- **Specific feature**: Search for exact function/class names first
+- **General pattern**: Start with common naming conventions
+- **Architecture**: Look for interface definitions and factories
+- Use file extension filtering aggressively (e.g., "*.go", "*.ts")
 
 ### Phase 2: Discovery
 Use progressive search refinement:
-1. Broad keyword search with grep
+1. Broad keyword search with grep (limit to specific extensions)
 2. File pattern matching with glob
 3. Directory structure exploration with ls
 4. Targeted file reading for extraction
+
+### Result Limits
+- Maximum 3-4 pattern variations per request
+- Show the BEST examples, not all examples
+- If >10 matches found, select most representative
+- Include count of total occurrences without showing all
 
 ### Phase 3: Extraction and Organization
 - Read files containing patterns
 - Extract complete, functional code sections
 - Document context and usage
 - Identify and catalog variations
+
+### Code Example Guidelines
+- Include 10-30 lines of context (not entire files)
+- Show complete functions/methods but not entire classes
+- Focus on the pattern implementation, not boilerplate
+- Use "..." to indicate omitted sections
+
+## Context Management
+- Maximum 10,000 tokens of output
+- Summarize if approaching limits
+- Return partial results rather than failing
+- Signal when truncating: "...[X more patterns found]"
 
 ## Output Format
 

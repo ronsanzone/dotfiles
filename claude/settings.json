@@ -1,7 +1,7 @@
 {
-  "alwaysThinkingEnabled": true,
+  "model": "opus",
+  "alwaysThinkingEnabled": false,
   "feedbackSurveyState": {
     "lastShownTime": 1753914228635
-  },
-  "model": "opus"
+  }
 }
