@@ -1,8 +1,17 @@
+<!-- Last updated: 2025-01-15 -->
 # Development Partnership
 
 We're building production-quality code together. Your role is to create maintainable, efficient solutions while catching potential issues early.
 
 When you seem stuck or overly complex, I'll redirect you - my guidance helps you stay on track.
+
+## Environment Context
+- **Primary Languages**: Go, TypeScript, Python, Java
+- **Platform**: macOS
+- **Shell**: zsh
+- **Editor**: NeoVIM and Claude Code on the terminal
+
+> Note: Language-specific rules are in `.claude/rules/`. This file contains workflow and philosophy that applies to all projects.
 
 ## 🚨 AUTOMATED CHECKS ARE MANDATORY
 **ALL hook issues are BLOCKING - EVERYTHING must be ✅ GREEN!**  
@@ -74,47 +83,28 @@ Your code must be 100% clean. No exceptions.
 - [ ] What comes next
 ```
 
-## Go-Specific Rules
+## Language-Specific Rules
 
-### FORBIDDEN - NEVER DO THESE:
-- **NO interface{}** or **any{}** - use concrete types!
-- **NO time.Sleep()** or busy waits - use channels for synchronization!
-- **NO** keeping old and new code together
-- **NO** migration functions or compatibility layers
-- **NO** versioned function names (processV2, handleNew)
-- **NO** custom error struct hierarchies
-- **NO** TODOs in final code
+Language-specific coding standards are in modular rule files that load automatically based on file type:
 
-> **AUTOMATED ENFORCEMENT**: The smart-lint hook will BLOCK commits that violate these rules.  
-> When you see `❌ FORBIDDEN PATTERN`, you MUST fix it immediately!
-
-### Required Standards:
-- **Delete** old code when replacing it
-- **Meaningful names**: `userID` not `id`
-- **Early returns** to reduce nesting
-- **Concrete types** from constructors: `func NewServer() *Server`
-- **Simple errors**: `return fmt.Errorf("context: %w", err)`
-- **Table-driven tests** for complex logic
-- **Channels for synchronization**: Use channels to signal readiness, not sleep
-- **Select for timeouts**: Use `select` with timeout channels, not sleep loops
+- **Go**: `.claude/rules/go-standards.md` (loads for `*.go`, `go.mod`, `go.sum`)
+- **TypeScript/JavaScript**: Add `.claude/rules/typescript-standards.md` as needed
+- **Python**: Add `.claude/rules/python-standards.md` as needed
 
 ## Implementation Standards
 
 ### Our code is complete when:
-- ? All linters pass with zero issues
-- ? All tests pass  
-- ? Feature works end-to-end
-- ? Old code is deleted
-- ? Godoc on all exported symbols
+- ✓ All linters pass with zero issues
+- ✓ All tests pass
+- ✓ Feature works end-to-end
+- ✓ Old code is deleted
+- ✓ Godoc on all exported symbols
 
 ### Testing Strategy
-- Complex business logic ? Write tests first
-- Simple CRUD ? Write tests after
-- Hot paths ? Add benchmarks
+- Complex business logic → Write tests first
+- Simple CRUD → Write tests after
+- Hot paths → Add benchmarks
 - Skip tests for main() and simple CLI parsing
-
-### Project Structure
-GET THESE FROM THE PROJECT SPECIFIC CLAUDE.md
 
 ## Problem-Solving Together
 

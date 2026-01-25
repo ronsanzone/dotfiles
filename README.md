@@ -1,79 +1,75 @@
 # dotfiles
 
+Personal dotfiles managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
-## Install things
+## Quick Start
 
-```
-brew install neovim
-
-brew install --cask kitty
-
-brew install --cask phoenix
-
-brew install tmux
-
-brew install fzf
-
-brew install --cask nikitabobko/tap/aerospace
-
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/c
-ustom}/plugins/zsh-autosuggestions
-
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-
-my-zsh/custom}/plugins/zsh-syntax-highlighting
-
-brew install jandedobbeleer/oh-my-posh/oh-my-posh
-
-oh-my-posh font install
-
-Install font “Iosevka”
+```bash
+git clone https://github.com/ronsanzone/dotfiles.git ~/code/dotfiles
+cd ~/code/dotfiles
+./install.sh
 ```
 
-## NeoVim
-[!Note] Neovim config is currently done via a fork of `kickstart.nvim`. This is stored in a forked github repo instead of this dotfiles package. Run the folowing to pull it into the config:
+The install script will:
+- Install Homebrew (if needed)
+- Install all packages from the Brewfile
+- Install Oh My Zsh and plugins
+- Install tmux plugin manager
+- Clone neovim config
+- Stow all dotfile packages
+- Install fonts
 
-```
-git clone https://github.com/ronsanzone/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
-```
+## Manual Usage
 
-## Symlink the config
+After initial setup, manage individual packages with stow:
 
-This assumes that our dotfiles package is in `~/code/dotfiles/`
+```bash
+# Apply a package
+stow zsh
 
-```
-ln -s ~/code/dotfiles/zsh/.zshrc ~/.zshrc
+# Remove a package
+stow -D zsh
 
-ln -s ~/code/dotfiles/phoenix/.phoenix.js ~/.phoenix.js
-
-mkdir ~/.config/tmux
-ln -s ~/code/dotfiles/tmux/tmux.conf ~/.config/tmux/tmux.conf
-ln -s ~/code/dotfiles/tmux/tmux-sessionizer.conf ~/.config/tmux-sessionizer/tmux-sessionizer.conf
-
-mkdir ~/.config/kitty
-ln -s ~/code/dotfiles/kitty/kitty.conf ~/.config/kitty/kitty.conf
-
-mkdir ~/.config/aerospace
-ln -s ~/code/dotfiles/aerospace/aerospace.toml ~/.config/aerospace/aerospace.toml
-
-rm -r ~/.claude/settings.local.json && ln -s  ~/code/dotfiles/claude/settings.local.json ~/.claude/settings.local.json
-rm -r ~/.claude/settings.json && ln -s  ~/code/dotfiles/claude/settings.json ~/.claude/settings.json
-rm -r  ~/.claude/agents && ln -s  ~/code/dotfiles/claude/agents ~/.claude/agents
-rm -r  ~/.claude/commands && ln -s  ~/code/dotfiles/claude/commands ~/.claude/commands
-rm -r  ~/.claude/CLAUDE.md && ln -s  ~/code/dotfiles/claude/CLAUDE.md ~/.claude/CLAUDE.md
-
+# Re-apply (useful after changes)
+stow -R zsh
 ```
 
-## Install Random Tools
+## Structure
+
+Each directory is a stow package that mirrors the target path from `$HOME`:
 
 ```
-brew install --cask font-monaspace-nerd-font font-noto-sans-symbols-2
-brew install bash bc coreutils gawk gh glab gsed jq nowplaying-cli
-brew install tree
-brew install btop atop
-brew install goenv
-brew install mongosh
-brew install zk
-brew install ripgrep
+dotfiles/
+├── bin/bin/*                                   → ~/bin/*
+├── kitty/.config/kitty/kitty.conf              → ~/.config/kitty/kitty.conf
+├── phoenix/.phoenix.js                         → ~/.phoenix.js
+├── tmux/.config/tmux/tmux.conf                 → ~/.config/tmux/tmux.conf
+├── tmux/.config/tmux-sessionizer/...           → ~/.config/tmux-sessionizer/...
+└── zsh/.zshrc                                  → ~/.zshrc
 ```
+
+## Secrets
+
+Secrets are stored in `zsh/.zshrc.secrets` (gitignored) and sourced by `.zshrc`.
+
+To set up secrets on a new machine, create `~/.zshrc.secrets`:
+
+```bash
+# Example contents
+export API_KEY=your-secret-key
+```
+
+## Neovim
+
+Neovim config is maintained in a separate repo:
+https://github.com/ronsanzone/kickstart.nvim
+
+The install script clones it automatically to `~/.config/nvim`.
+
+## Packages Installed
+
+See [Brewfile](./Brewfile) for the full list. Highlights:
+- neovim, tmux, fzf, ripgrep
+- kitty, phoenix
+- oh-my-posh, zsh plugins
+- Development tools (gh, glab, goenv, mongosh)

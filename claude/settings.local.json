@@ -12,7 +12,8 @@
       "Bash(./.claude/hooks/go-lint-format.sh:*)",
       "Bash(mkdir:*)",
       "Bash(git mv:*)",
-      "mcp__gopls__go_workspace"
+      "mcp__gopls__go_workspace",
+      "Bash(gh api:*)"
     ],
     "deny": []
   },
