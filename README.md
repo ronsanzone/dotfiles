@@ -19,6 +19,14 @@ The install script will:
 - Stow all dotfile packages
 - Install fonts
 
+## Required Manual Steps
+The following commands are needed to set the Kitty and Tmux themes:
+```bash
+kitten themes Kanagawa
+
+<tmux leader> + I
+```
+
 ## Manual Usage
 
 After initial setup, manage individual packages with stow:
