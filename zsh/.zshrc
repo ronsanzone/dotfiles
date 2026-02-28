@@ -177,6 +177,12 @@ mclaude() {
   	claude $*
 }
 
+claude45() {
+	export ANTHROPIC_DEFAULT_OPUS_MODEL="global.anthropic.claude-opus-4-5-20251101-v1:0"
+  	claude $*
+}
+
+alias tt='bunx toktrack'
 
 ## Mongohouse functions and aliases 
 
@@ -192,7 +198,6 @@ zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "/Users/ron.sanzone"/.zsh/cache
 # . /Users/ron.sanzone/.asdf/asdf.sh
 . /Users/ron.sanzone/.asdf/plugins/java/set-java-home.zsh
-
 
 source  ~/.config/.jira/.env
 
