@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo ""
+echo "  ╔═══════════════════════════════════════╗"
+echo "  ║   🍴 F O R K   S Y N C E R   🍴      ║"
+echo "  ║         ┌─────────────┐               ║"
+echo "  ║         │  upstream   │               ║"
+echo "  ║         └──────┬──────┘               ║"
+echo "  ║                │                      ║"
+echo "  ║                ▼                      ║"
+echo "  ║         ┌─────────────┐               ║"
+echo "  ║         │  your fork  │               ║"
+echo "  ║         └──────┬──────┘               ║"
+echo "  ║                │                      ║"
+echo "  ║                ▼                      ║"
+echo "  ║         ┌─────────────┐               ║"
+echo "  ║         │    local    │               ║"
+echo "  ║         └─────────────┘               ║"
+echo "  ╚═══════════════════════════════════════╝"
+echo ""
+
+# Detect fork repo from origin remote
+REPO=$(git remote get-url origin | sed -E 's|.*github\.com[:/]||; s|\.git$||')
+if [[ -z "$REPO" ]]; then
+  echo "  ❌ Error: could not determine repo from origin remote" >&2
+  exit 1
+fi
+
+echo "  🔍 Detected fork: $REPO"
+echo "  ─────────────────────────────────────────"
+
+echo "  🌐 Syncing fork with upstream (master)..."
+gh repo sync "$REPO" -b master
+echo "  ✅ Fork synced!"
+
+# Stash only if there are local changes
+if git diff --quiet && git diff --cached --quiet; then
+  STASHED=false
+  echo "  📭 No local changes to stash"
+else
+  echo "  📦 Stashing local changes..."
+  git stash
+  STASHED=true
+fi
+
+echo "  🔀 Checking out master..."
+git checkout master
+
+echo "  ⬇️  Pulling latest..."
+git pull origin master
+
+if $STASHED; then
+  echo "  📬 Restoring stashed changes..."
+  git stash pop
+fi
+
+echo ""
+echo "  ─────────────────────────────────────────"
+echo "  🎉 All synced up! You're good to go."
+echo ""

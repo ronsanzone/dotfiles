@@ -164,23 +164,6 @@ export PATH="$PATH:$(go env GOPATH)/bin"
 #export CLAUDE_CODE_SUBAGENT_MODEL="us.anthropic.claude-sonnet-4-5-20250929-v1:0"
 #unset ANTHROPIC_MODEL
 #export ANTHROPIC_MODEL="global.anthropic.claude-opus-4-5-20251101-v1:0"
-export AWS_DEFAULT_REGION='us-east-1'
-export AWS_PROFILE='ai-prod-llm'
-export CLAUDE_CODE_USE_BEDROCK=1
-# Recommended output token settings for Bedrock
-#export CLAUDE_CODE_MAX_OUTPUT_TOKENS=32768
-#export MAX_THINKING_TOKENS=4096
-mclaude() {
-  	if ! aws sts get-caller-identity --profile ai-prod-llm 2>/dev/null | jq -e '.Account' >/dev/null 2>&1; then
-    	aws sso login --profile ai-prod-llm
-  	fi
-  	claude $*
-}
-
-claude45() {
-	export ANTHROPIC_DEFAULT_OPUS_MODEL="global.anthropic.claude-opus-4-5-20251101-v1:0"
-  	claude $*
-}
 
 alias tt='bunx toktrack'
 
@@ -209,7 +192,7 @@ export GOPRIVATE=github.com/10gen/*
 export CM_ROOT=/Users/ron.sanzone/code/mms-automation/go_planner
 export GOROOT=$(brew --prefix golang)/libexec
 
-export GOPATH=$CM_ROOT
+# export GOPATH=$CM_ROOT  # was causing mongohouse lint to fail; use default ~/go
 
 # bun completions
 [ -s "/Users/ron.sanzone/.bun/_bun" ] && source "/Users/ron.sanzone/.bun/_bun"
@@ -220,3 +203,7 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # opencode
 export PATH=/Users/ron.sanzone/.opencode/bin:$PATH
+
+ulimit -n 61440 61440
+ulimit -f unlimited
+

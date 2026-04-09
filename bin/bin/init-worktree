@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
 
 # Script to initialize a git worktree for parallel Claude Code work
-# Usage: ./init-worktree.sh <ticket-id> <short-description>
+# Usage: init-worktree <ticket-id> <short-description>
+
+# Check we're in a git repo
+git rev-parse --git-dir >/dev/null 2>&1 || { echo "Error: Not in a git repository"; exit 1; }
 
 # Check if correct number of arguments provided
 if [[ $# -ne 2 ]]; then
@@ -15,22 +18,20 @@ fi
 TICKET_ID="$1"
 SHORT_DESC="$2"
 
-# Create branch name
-# 1. Convert to lowercase
-# 2. Replace spaces with hyphens
-# 3. Combine ticket and description
-BRANCH_NAME=$(echo "${TICKET_ID}-${SHORT_DESC}" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+# Create branch name: lowercase, replace non-alphanumeric with hyphens, collapse/trim
+BRANCH_NAME=$(echo "${TICKET_ID}-${SHORT_DESC}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]/-/g' | sed 's/--*/-/g' | sed 's/^-//;s/-$//')
 
 echo "Creating worktree with branch: $BRANCH_NAME"
 
-# Get the current directory name (project directory)
-PROJECT_DIR=$(basename "$PWD")
+# Get the repo name from the git toplevel directory
+REPO_NAME=$(basename "$(git rev-parse --show-toplevel)")
 
-# Get the parent directory path
-PARENT_DIR="../"
+# Static workspace under ~/code/worktrees/<repo_name>
+WORKTREE_BASE="$HOME/code/worktrees/${REPO_NAME}"
+WORKTREE_DIR="${WORKTREE_BASE}/${BRANCH_NAME}"
 
-# Full path for the new worktree (includes project name prefix)
-WORKTREE_DIR="${PARENT_DIR}${PROJECT_DIR}-${BRANCH_NAME}"
+# Ensure the base directory exists
+mkdir -p "$WORKTREE_BASE"
 
 # Check if worktree already exists
 if [[ -d "$WORKTREE_DIR" ]]; then
@@ -45,34 +46,27 @@ git worktree add "$WORKTREE_DIR" -b "$BRANCH_NAME" || {
     exit 1
 }
 
-# Check if .claude/settings.local.json exists in current project
+# Copy .claude/settings.local.json if it exists in current project
 if [[ -f ".claude/settings.local.json" ]]; then
-    echo "Moving .claude/settings.local.json to new worktree..."
+    echo "Copying .claude/settings.local.json to new worktree..."
 
-    # Ensure .claude directory exists in new worktree
     mkdir -p "${WORKTREE_DIR}/.claude"
 
-    # Copy the settings file
     cp ".claude/settings.local.json" "${WORKTREE_DIR}/.claude/settings.local.json" || {
-        echo "Warning: Failed to move .claude/settings.local.json"
+        echo "Warning: Failed to copy .claude/settings.local.json"
     }
 else
     echo "Note: .claude/settings.local.json not found in current directory"
 fi
 
-# Change to the new worktree directory
-echo "Changing to worktree directory: $WORKTREE_DIR"
-cd "$WORKTREE_DIR"
-
 echo ""
 echo "✓ Worktree successfully created!"
-echo "  Project: $PROJECT_DIR"
+echo "  Repo: $REPO_NAME"
 echo "  Branch: $BRANCH_NAME"
-echo "  Directory: $(basename "$WORKTREE_DIR")"
-echo "  Location: $(pwd)"
+echo "  Location: $WORKTREE_DIR"
 echo ""
-echo "To return to this worktree later, use:"
+echo "To start working:"
 echo "  cd $WORKTREE_DIR"
 echo ""
-echo "To remove this worktree when done, use:"
+echo "To remove this worktree when done:"
 echo "  git worktree remove $WORKTREE_DIR"

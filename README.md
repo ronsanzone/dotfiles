@@ -74,6 +74,21 @@ https://github.com/ronsanzone/kickstart.nvim
 
 The install script clones it automatically to `~/.config/nvim`.
 
+## LaunchAgent
+We have some launch agent scripts that can be installed to manage processes running on the laptop:
+
+### OpenCode Server
+This starts up an opencode server on localhost to be used by various agentic coding tools:
+```
+# Copy the plist into place
+cp ./launchagents/com.user.opencode.plist ~/Library/LaunchAgents/
+
+# Load and start the service
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.user.opencode.plist
+
+# Verify it's running
+launchctl print gui/$(id -u)/com.user.opencode
+```
 ## Packages Installed
 
 See [Brewfile](./Brewfile) for the full list. Highlights:
