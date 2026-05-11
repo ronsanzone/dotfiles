@@ -174,6 +174,10 @@ mhtp() {
  	go run ./cmd/buildscript/build.go test:unit -pkg=$1/...
 }
 
+c45() {
+	ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-4-5-20251101 claude --model claude-opus-4-5-20251101 $1
+}
+
 
 fpath[1,0]=$HOME/.zsh/completion
 
