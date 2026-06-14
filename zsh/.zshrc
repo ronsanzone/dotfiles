@@ -151,8 +151,12 @@ alias zc="nvim ~/.zshrc"
 alias set-custom-agent="python3 $MMS_HOME/server/scripts/nds/set_custom_agent.py"
 
 eval "$(oh-my-posh init zsh --config $(brew --prefix oh-my-posh)/themes/pure.omp.json)"
+#eval "$(oh-my-posh init zsh --config $(brew --prefix oh-my-posh)/themes/mojave.omp.json)"
 
 export PATH="$PATH:$(go env GOPATH)/bin"
+
+
+source "$HOME/code/mongo-pi-extensions/sandbox-exec/shell-snippet.zsh"
 
 ## MongoDB related functions and aliases
 
@@ -166,6 +170,7 @@ export PATH="$PATH:$(go env GOPATH)/bin"
 #export ANTHROPIC_MODEL="global.anthropic.claude-opus-4-5-20251101-v1:0"
 
 alias tt='bunx toktrack'
+alias ccusage='bunx ccusage@latest'
 
 ## Mongohouse functions and aliases 
 
@@ -211,3 +216,7 @@ export PATH=/Users/ron.sanzone/.opencode/bin:$PATH
 ulimit -n 61440 61440
 ulimit -f unlimited
 
+
+# Pi
+export PATH="/Users/ron.sanzone/.asdf/installs/nodejs/22.11.0/bin:$PATH"
+alias kanopy-oidc=/Applications/kanopy-oidc-macos-arm64-v0.5.5
