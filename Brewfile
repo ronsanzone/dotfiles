@@ -28,9 +28,11 @@ brew "btop"
 brew "zk"
 
 # Casks (GUI applications)
+cask "ghostty"
 cask "kitty"
 cask "phoenix"
 
 # Fonts
+cask "font-fira-code"
 cask "font-monaspice-nerd-font"
 cask "font-noto-sans-symbols-2"

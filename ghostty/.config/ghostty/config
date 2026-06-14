@@ -1,0 +1,53 @@
+# Tuned for Jump Desktop from a 12.9" iPad Pro.
+font-family = Fira Code
+font-size = 17.5
+font-feature = calt, liga
+font-thicken = true
+font-thicken-strength = 48
+
+theme = opencraft-pi-native-dark
+background-opacity = 0.98
+background-blur = 8
+background-opacity-cells = true
+alpha-blending = linear-corrected
+
+cursor-style = bar
+cursor-style-blink = false
+cursor-color = #55e0dc
+cursor-text = #171411
+adjust-cursor-thickness = 3
+custom-shader = shaders/cursor-trail.glsl
+custom-shader-animation = true
+
+window-padding-x = 10
+window-padding-y = 8
+window-padding-balance = true
+window-inherit-font-size = false
+window-inherit-working-directory = true
+tab-inherit-working-directory = true
+split-inherit-working-directory = true
+
+scroll-to-bottom = keystroke, no-output
+mouse-hide-while-typing = true
+mouse-scroll-multiplier = 2
+mouse-shift-capture = never
+copy-on-select = clipboard
+clipboard-read = ask
+clipboard-write = allow
+clipboard-paste-protection = true
+clipboard-trim-trailing-spaces = true
+confirm-close-surface = false
+quit-after-last-window-closed = true
+
+macos-option-as-alt = left
+macos-non-native-fullscreen = visible-menu
+macos-window-shadow = true
+macos-auto-secure-input = true
+macos-secure-input-indication = true
+macos-icon = custom-style
+macos-icon-frame = plastic
+macos-icon-ghost-color = #55e0dc
+macos-icon-screen-color = #171411,#211b16,#2d241d
+
+bold-color = bright
+faint-opacity = 0.68

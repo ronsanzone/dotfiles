@@ -1,0 +1,36 @@
+# Ported from ~/code/pi-essentials/themes/opencraft-pi-native-dark.json.
+background = #171411
+foreground = #f4f7ef
+
+selection-background = #3b3327
+selection-foreground = #f4f7ef
+
+cursor-color = #55e0dc
+cursor-text = #171411
+
+split-divider-color = #2d241d
+unfocused-split-fill = #171411
+unfocused-split-opacity = 0.18
+
+search-background = #ffd15c
+search-foreground = #171411
+search-selected-background = #55e0dc
+search-selected-foreground = #171411
+
+palette = 0=#171411
+palette = 1=#ff3200
+palette = 2=#79c05a
+palette = 3=#ffd15c
+palette = 4=#4f7fff
+palette = 5=#b983ff
+palette = 6=#55e0dc
+palette = 7=#f4f7ef
+palette = 8=#6f6f6f
+palette = 9=#b70000
+palette = 10=#91bd59
+palette = 11=#ffd15c
+palette = 12=#315ab8
+palette = 13=#7f52bf
+palette = 14=#1f8f93
+palette = 15=#f4ead0
+palette-generate = true
