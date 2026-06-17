@@ -85,6 +85,7 @@ stow_packages() {
         "$HOME/.config/tmux-sessionizer"
         "$HOME/.config/ghostty"
         "$HOME/.config/kitty"
+        "$HOME/.config/herdr/config.toml"
         "$HOME/bin"
     )
 
@@ -102,7 +103,7 @@ stow_packages() {
     mkdir -p "$HOME/bin"
 
     # Stow each package explicitly into $HOME
-    for package in zsh phoenix tmux ghostty kitty bin; do
+    for package in zsh phoenix tmux ghostty kitty herdr bin; do
         info "Stowing $package..."
         stow -v --restow \
             -d "$DOTFILES_DIR" \

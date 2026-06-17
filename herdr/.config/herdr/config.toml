@@ -1,0 +1,81 @@
+# herdr configuration
+# Tuned to feel closer to the previous tmux setup in ~/.config/tmux/tmux.conf.
+
+onboarding = false
+
+[theme]
+name = "kanagawa"
+
+[terminal]
+shell_mode = "auto"
+new_cwd = "follow"
+
+[keys]
+# Match tmux prefix from ~/.config/tmux/tmux.conf
+prefix = "ctrl+space"
+
+# tmux-ish basics
+help = "prefix+?"
+detach = "prefix+d"
+reload_config = "prefix+r"
+
+# Use Herdr workspaces as the replacement for tmux-sessionizer/project switching
+workspace_picker = "prefix+f"
+new_workspace = "prefix+shift+n"
+rename_workspace = "prefix+shift+w"
+close_workspace = "prefix+shift+d"
+goto = "prefix+g"
+
+# Treat Herdr tabs like tmux windows
+new_tab = "prefix+w"
+previous_tab = "prefix+p"
+next_tab = "prefix+n"
+switch_tab = "prefix+1..9"
+rename_tab = "prefix+comma"
+close_tab = "prefix+ampersand"
+
+# tmux-like pane controls
+split_vertical = "prefix+|"
+split_horizontal = "prefix+minus"
+focus_pane_left = "prefix+h"
+focus_pane_down = "prefix+j"
+focus_pane_up = "prefix+k"
+focus_pane_right = "prefix+l"
+cycle_pane_next = "prefix+o"
+last_pane = "prefix+semicolon"
+close_pane = "prefix+x"
+zoom = "prefix+z"
+copy_mode = "prefix+["
+resize_mode = "prefix+R"
+
+# Herdr UI
+settings = "prefix+s"
+open_notification_target = "prefix+shift+o"
+toggle_sidebar = "prefix+b"
+
+# Navigate-mode keeps vim movement
+navigate_workspace_up = "up"
+navigate_workspace_down = "down"
+navigate_pane_left = "h"
+navigate_pane_down = "j"
+navigate_pane_up = "k"
+navigate_pane_right = "l"
+
+[[keys.command]]
+key = "prefix+shift+f"
+type = "pane"
+command = "~/code/claude-essentials/cb"
+description = "open claude helper"
+
+[ui]
+mouse_capture = true
+confirm_close = true
+prompt_new_tab_name = false
+sidebar_width = 32
+agent_panel_scope = "all"
+
+[advanced]
+scrollback_limit_bytes = 104857600
+
+[experimental]
+pane_history = false

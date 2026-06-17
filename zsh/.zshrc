@@ -220,3 +220,6 @@ ulimit -f unlimited
 # Pi
 export PATH="/Users/ron.sanzone/.asdf/installs/nodejs/22.11.0/bin:$PATH"
 alias kanopy-oidc=/Applications/kanopy-oidc-macos-arm64-v0.5.5
+
+# herdr
+export PATH="/Users/sanzoner/.local/bin:$PATH"

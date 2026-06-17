@@ -50,6 +50,7 @@ Each directory is a stow package that mirrors the target path from `$HOME`:
 dotfiles/
 ├── bin/bin/*                                   → ~/bin/*
 ├── ghostty/.config/ghostty/config              → ~/.config/ghostty/config
+├── herdr/.config/herdr/config.toml             → ~/.config/herdr/config.toml
 ├── kitty/.config/kitty/kitty.conf              → ~/.config/kitty/kitty.conf
 ├── phoenix/.phoenix.js                         → ~/.phoenix.js
 ├── tmux/.config/tmux/tmux.conf                 → ~/.config/tmux/tmux.conf
