@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Fail loud: a bootstrap installer should stop at the first real failure so
+# you fix it and re-run. `dot` already makes every step idempotent enough
+# that re-running is cheap.
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -6,6 +9,19 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 info() { echo "[INFO] $*"; }
 warn() { echo "[WARN] $*"; }
 error() { echo "[ERROR] $*" >&2; exit 1; }
+
+# Clone a git repo into $1 if $1 is not already a directory. $3 is an optional
+# human-readable name for logs (defaults to the path). All "install X if
+# missing" steps funnel through here.
+clone_if_missing() {
+    local dir="$1" url="$2" name="${3:-$1}"
+    if [[ -d "$dir" ]]; then
+        info "$name already installed"
+        return 0
+    fi
+    info "Installing $name..."
+    git clone "$url" "$dir"
+}
 
 # Install Homebrew if not present
 install_homebrew() {
@@ -17,126 +33,50 @@ install_homebrew() {
     fi
 }
 
-# Install packages from Brewfile
-# Resilient: continues past individual package failures, logs failures to
-# packages/failed_packages_<timestamp>.txt for `./install.sh --retry`.
-FAILED_DIR="$DOTFILES_DIR/packages"
-FAILED_FILE=""
-
+# Install packages from Brewfile. `brew bundle` is idempotent: re-running this
+# script retries anything that previously failed, so there's no need to track
+# failures separately.
 install_packages() {
     info "Installing packages from Brewfile..."
-    mkdir -p "$FAILED_DIR"
-
-    # `brew bundle` exits non-zero if any install fails; capture which.
-    # --no-lock avoids committing a Brewfile.lock; we don't pin versions here.
-    local failed_entries
-    failed_entries=$(brew bundle install --no-lock --file="$DOTFILES_DIR/Brewfile" 2>&1 | tee /dev/stderr \
-        | grep -E '^Failed to (install|upgrade)' || true)
-
-    if [[ -n "$failed_entries" ]]; then
-        FAILED_FILE="$FAILED_DIR/failed_packages_$(date +%Y%m%d-%H%M%S).txt"
-        printf '%s\n' "$failed_entries" > "$FAILED_FILE"
-        warn "some packages failed; logged to $FAILED_FILE"
-        warn "run: ./install.sh --retry"
-    fi
+    # --no-lock: we don't pin versions here, so don't commit a Brewfile.lock.
+    brew bundle install --no-lock --file="$DOTFILES_DIR/Brewfile"
 }
 
-# Retry packages recorded in the most recent failed_packages_*.txt
-retry_failed() {
-    local failed_file
-    failed_file=$(find "$FAILED_DIR" -name 'failed_packages_*.txt' -type f 2>/dev/null | sort -r | head -1 || true)
-
-    if [[ -z "$failed_file" || ! -f "$failed_file" ]]; then
-        info "No failed packages file found; nothing to retry"
-        return 0
-    fi
-
-    info "Retrying failed packages from: $failed_file"
-    local retry=0 success=0 entry name
-    while IFS= read -r entry; do
-        [[ -z "$entry" ]] && continue
-        ((++retry))
-        # dmmulroy-style lines: 'brew:<name>' or 'cask:<name>'. Our `brew bundle`
-        # output is free-form, so also handle 'Failed to install <name>' and
-        # 'Failed to upgrade <name>' by extracting the package token.
-        case "$entry" in
-            brew:*|cask:*) name="${entry#*:}" ;;
-            "Failed to install "*) name="${entry#Failed to install }" ;;
-            "Failed to upgrade "*) name="${entry#Failed to upgrade }" ;;
-            *) name="$entry" ;;
-        esac
-        name="${name%% *}"  # first token only
-        info "Retrying: $name"
-        if brew install "$name" 2>/dev/null || brew install --cask "$name" 2>/dev/null; then
-            info "OK: $name"
-            ((++success))
-        else
-            warn "still failing: $name"
-        fi
-    done < "$failed_file"
-
-    info "retry complete: $success/$retry succeeded"
-    if [[ "$success" -eq "$retry" ]]; then
-        rm "$failed_file"
-        info "all retried packages installed; removed $failed_file"
-    fi
-}
-
-# Install Oh My Zsh if not present
+# Install Oh My Zsh. We clone the repo directly rather than running omz's own
+# installer: that script also edits ~/.zshrc, which we manage via stow. A plain
+# clone gives us the framework + custom dir without that side effect.
 install_oh_my_zsh() {
-    if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-        info "Installing Oh My Zsh..."
-        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-    else
-        info "Oh My Zsh already installed"
-    fi
+    clone_if_missing "$HOME/.oh-my-zsh" \
+        https://github.com/ohmyzsh/ohmyzsh.git "Oh My Zsh"
 }
 
-# Install zsh plugins
+# Install zsh plugins into the oh-my-zsh custom dir
 install_zsh_plugins() {
     local zsh_custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
-
-    if [[ ! -d "$zsh_custom/plugins/zsh-autosuggestions" ]]; then
-        info "Installing zsh-autosuggestions..."
-        git clone https://github.com/zsh-users/zsh-autosuggestions "$zsh_custom/plugins/zsh-autosuggestions"
-    else
-        info "zsh-autosuggestions already installed"
-    fi
-
-    if [[ ! -d "$zsh_custom/plugins/zsh-syntax-highlighting" ]]; then
-        info "Installing zsh-syntax-highlighting..."
-        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$zsh_custom/plugins/zsh-syntax-highlighting"
-    else
-        info "zsh-syntax-highlighting already installed"
-    fi
+    clone_if_missing "$zsh_custom/plugins/zsh-autosuggestions" \
+        https://github.com/zsh-users/zsh-autosuggestions "zsh-autosuggestions"
+    clone_if_missing "$zsh_custom/plugins/zsh-syntax-highlighting" \
+        https://github.com/zsh-users/zsh-syntax-highlighting.git "zsh-syntax-highlighting"
 }
 
 # Install tmux plugin manager
 install_tpm() {
-    if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
-        info "Installing tmux plugin manager..."
-        git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
-    else
-        info "TPM already installed"
-    fi
-}
-
-# Install neovim config
-install_neovim_config() {
-    local nvim_dir="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
-    if [[ ! -d "$nvim_dir" ]]; then
-        info "Installing neovim config..."
-        git clone https://github.com/ronsanzone/kickstart.nvim.git "$nvim_dir"
-    else
-        info "Neovim config already installed"
-    fi
+    clone_if_missing "$HOME/.tmux/plugins/tpm" \
+        https://github.com/tmux-plugins/tpm "tmux plugin manager"
 }
 
 # Stow packages
 stow_packages() {
     info "Stowing dotfiles..."
 
-    # Remove existing files/symlinks that would conflict
+    # Real files/dirs at these paths would conflict with stow; back them up
+    # out of the way (idempotently). We deliberately leave existing *symlinks*
+    # alone here: `stow --restow` replaces those itself, and if stow later fails
+    # on one package we must not have already deleted working symlinks for the
+    # other packages (that stranded ~/.zshrc etc. in the past).
+    # Note: $HOME/bin is intentionally NOT a backup target. It is a real dir
+    # that stow merges symlinks *into* (no conflict); moving it aside would
+    # also discard the ~/bin/dot symlink created by dot's own install.sh.
     local targets=(
         "$HOME/.zshrc"
         "$HOME/.phoenix.js"
@@ -145,15 +85,15 @@ stow_packages() {
         "$HOME/.config/ghostty"
         "$HOME/.config/kitty"
         "$HOME/.config/herdr/config.toml"
-        "$HOME/bin"
     )
 
     for target in "${targets[@]}"; do
         if [[ -e "$target" && ! -L "$target" ]]; then
+            # Idempotent: drop a stale .backup first so mv never nests a dir
+            # (mv into an existing dir) or silently overwrites a prior file backup.
+            rm -rf "${target}.backup"
             warn "Backing up existing $target to ${target}.backup"
             mv "$target" "${target}.backup"
-        elif [[ -L "$target" ]]; then
-            rm "$target"
         fi
     done
 
@@ -161,14 +101,19 @@ stow_packages() {
     mkdir -p "$HOME/.config"
     mkdir -p "$HOME/bin"
 
-    # Stow each package explicitly into $HOME
+    # Stow each package independently so a failure on one package doesn't
+    # strand the others or abort the whole install under `set -e`. Real
+    # failures are reported and surfaced via the return code.
+    local failures=0
     for package in zsh phoenix tmux ghostty kitty herdr bin; do
         info "Stowing $package..."
-        stow -v --restow \
-            -d "$DOTFILES_DIR" \
-            -t "$HOME" \
-            "$package"
+        if ! stow -v --restow -d "$DOTFILES_DIR" -t "$HOME" "$package"; then
+            warn "stow failed for package: $package"
+            failures=$((failures + 1))
+        fi
     done
+
+    return "$failures"
 }
 
 # Install fonts
@@ -193,20 +138,6 @@ setup_secrets() {
 
 # Main
 main() {
-    local retry=0
-    while [[ $# -gt 0 ]]; do
-        case "$1" in
-            --retry) retry=1 ;;
-            *) error "unknown option: $1" ;;
-        esac
-        shift
-    done
-
-    if [[ "$retry" -eq 1 ]]; then
-        retry_failed
-        return
-    fi
-
     info "Starting dotfiles installation..."
 
     install_homebrew
@@ -214,7 +145,6 @@ main() {
     install_oh_my_zsh
     install_zsh_plugins
     install_tpm
-    install_neovim_config
     stow_packages
     install_fonts
     setup_secrets
@@ -224,4 +154,3 @@ main() {
 }
 
 main "$@"
-
