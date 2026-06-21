@@ -1,3 +1,5 @@
+tap "jandedobbeleer/oh-my-posh"
+
 # Core tools
 brew "stow"
 brew "neovim"

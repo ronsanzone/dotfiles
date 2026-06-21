@@ -7,3 +7,6 @@
 .env
 .env.local
 *.env.local
+
+# Homebrew bundle lockfile (this repo tracks desired packages, not pins)
+Brewfile.lock.json

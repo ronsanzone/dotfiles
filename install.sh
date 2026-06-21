@@ -38,8 +38,18 @@ install_homebrew() {
 # failures separately.
 install_packages() {
     info "Installing packages from Brewfile..."
-    # --no-lock: we don't pin versions here, so don't commit a Brewfile.lock.
-    brew bundle install --no-lock --file="$DOTFILES_DIR/Brewfile"
+
+    # Homebrew 6 enforces tap trust when HOMEBREW_REQUIRE_TAP_TRUST is enabled.
+    # We intentionally use oh-my-posh's upstream tap, so trust it before bundle
+    # attempts to load the fully-qualified formula.
+    if brew help trust >/dev/null 2>&1; then
+        brew tap jandedobbeleer/oh-my-posh >/dev/null
+        brew trust --tap jandedobbeleer/oh-my-posh >/dev/null
+    fi
+
+    # Homebrew 6 removed `brew bundle --no-lock`; keep Brewfile.lock out of
+    # version control via .gitignore instead of passing the obsolete flag.
+    brew bundle install --file="$DOTFILES_DIR/Brewfile"
 }
 
 # Install Oh My Zsh. We clone the repo directly rather than running omz's own
@@ -88,6 +98,13 @@ stow_packages() {
     )
 
     for target in "${targets[@]}"; do
+        # If the containing directory is already a stow-managed symlink, the
+        # target resolves back into this repo. Do not "back up" our own tracked
+        # files on later idempotent runs (for example ~/.config/herdr/config.toml).
+        if [[ -L "$(dirname "$target")" ]]; then
+            continue
+        fi
+
         if [[ -e "$target" && ! -L "$target" ]]; then
             # Idempotent: drop a stale .backup first so mv never nests a dir
             # (mv into an existing dir) or silently overwrites a prior file backup.
@@ -119,7 +136,9 @@ stow_packages() {
 # Install fonts
 install_fonts() {
     info "Installing Oh My Posh fonts..."
-    oh-my-posh font install Iosevka
+    # `dot down` usually runs non-interactively; without --headless the current
+    # oh-my-posh font installer exits 70 when it cannot open its TUI.
+    oh-my-posh font install Iosevka --headless
 }
 
 # Setup secrets file
