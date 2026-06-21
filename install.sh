@@ -18,9 +18,68 @@ install_homebrew() {
 }
 
 # Install packages from Brewfile
+# Resilient: continues past individual package failures, logs failures to
+# packages/failed_packages_<timestamp>.txt for `./install.sh --retry`.
+FAILED_DIR="$DOTFILES_DIR/packages"
+FAILED_FILE=""
+
 install_packages() {
     info "Installing packages from Brewfile..."
-    brew bundle install --file="$DOTFILES_DIR/Brewfile"
+    mkdir -p "$FAILED_DIR"
+
+    # `brew bundle` exits non-zero if any install fails; capture which.
+    # --no-lock avoids committing a Brewfile.lock; we don't pin versions here.
+    local failed_entries
+    failed_entries=$(brew bundle install --no-lock --file="$DOTFILES_DIR/Brewfile" 2>&1 | tee /dev/stderr \
+        | grep -E '^Failed to (install|upgrade)' || true)
+
+    if [[ -n "$failed_entries" ]]; then
+        FAILED_FILE="$FAILED_DIR/failed_packages_$(date +%Y%m%d-%H%M%S).txt"
+        printf '%s\n' "$failed_entries" > "$FAILED_FILE"
+        warn "some packages failed; logged to $FAILED_FILE"
+        warn "run: ./install.sh --retry"
+    fi
+}
+
+# Retry packages recorded in the most recent failed_packages_*.txt
+retry_failed() {
+    local failed_file
+    failed_file=$(find "$FAILED_DIR" -name 'failed_packages_*.txt' -type f 2>/dev/null | sort -r | head -1 || true)
+
+    if [[ -z "$failed_file" || ! -f "$failed_file" ]]; then
+        info "No failed packages file found; nothing to retry"
+        return 0
+    fi
+
+    info "Retrying failed packages from: $failed_file"
+    local retry=0 success=0 entry name
+    while IFS= read -r entry; do
+        [[ -z "$entry" ]] && continue
+        ((++retry))
+        # dmmulroy-style lines: 'brew:<name>' or 'cask:<name>'. Our `brew bundle`
+        # output is free-form, so also handle 'Failed to install <name>' and
+        # 'Failed to upgrade <name>' by extracting the package token.
+        case "$entry" in
+            brew:*|cask:*) name="${entry#*:}" ;;
+            "Failed to install "*) name="${entry#Failed to install }" ;;
+            "Failed to upgrade "*) name="${entry#Failed to upgrade }" ;;
+            *) name="$entry" ;;
+        esac
+        name="${name%% *}"  # first token only
+        info "Retrying: $name"
+        if brew install "$name" 2>/dev/null || brew install --cask "$name" 2>/dev/null; then
+            info "OK: $name"
+            ((++success))
+        else
+            warn "still failing: $name"
+        fi
+    done < "$failed_file"
+
+    info "retry complete: $success/$retry succeeded"
+    if [[ "$success" -eq "$retry" ]]; then
+        rm "$failed_file"
+        info "all retried packages installed; removed $failed_file"
+    fi
 }
 
 # Install Oh My Zsh if not present
@@ -134,6 +193,20 @@ setup_secrets() {
 
 # Main
 main() {
+    local retry=0
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --retry) retry=1 ;;
+            *) error "unknown option: $1" ;;
+        esac
+        shift
+    done
+
+    if [[ "$retry" -eq 1 ]]; then
+        retry_failed
+        return
+    fi
+
     info "Starting dotfiles installation..."
 
     install_homebrew

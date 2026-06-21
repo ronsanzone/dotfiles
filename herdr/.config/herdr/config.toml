@@ -6,6 +6,16 @@ onboarding = false
 [theme]
 name = "kanagawa"
 
+[theme.custom]
+# Kanagawa-inspired overrides so Herdr chrome matches the Ghostty/Kitty palette.
+# Values sourced from the Kanagawa color scheme.
+panel_bg = "#1f1f28"
+accent = "#dca561"
+blue = "#7e9cd8"
+green = "#98bb6c"
+red = "#c84353"
+yellow = "#e6c384"
+
 [terminal]
 shell_mode = "auto"
 new_cwd = "follow"
@@ -37,16 +47,20 @@ close_tab = "prefix+ampersand"
 # tmux-like pane controls
 split_vertical = "prefix+|"
 split_horizontal = "prefix+minus"
-focus_pane_left = "prefix+h"
-focus_pane_down = "prefix+j"
-focus_pane_up = "prefix+k"
-focus_pane_right = "prefix+l"
+focus_pane_left = ["ctrl+h", "prefix+h"]
+focus_pane_down = ["ctrl+j", "prefix+j"]
+focus_pane_up = ["ctrl+k", "prefix+k"]
+focus_pane_right = ["ctrl+l", "prefix+l"]
 cycle_pane_next = "prefix+o"
 last_pane = "prefix+semicolon"
 close_pane = "prefix+x"
 zoom = "prefix+z"
 copy_mode = "prefix+["
 resize_mode = "prefix+R"
+
+# Jump to the Nth detected agent pane (Herdr's closest analogue to tmux
+# session/window jumps, but scoped to agents).
+focus_agent = "prefix+alt+1..9"
 
 # Herdr UI
 settings = "prefix+s"
@@ -62,6 +76,9 @@ navigate_pane_up = "k"
 navigate_pane_right = "l"
 
 [[keys.command]]
+# Opens the claude helper in a focused pane. The helper script is managed in
+# claude-essentials; create it there (~/code/claude-essentials/cb) before relying
+# on this binding, or remove this block if unused.
 key = "prefix+shift+f"
 type = "pane"
 command = "~/code/claude-essentials/cb"
@@ -77,5 +94,18 @@ agent_panel_scope = "all"
 [advanced]
 scrollback_limit_bytes = 104857600
 
+[session]
+# Closest analogue to tmux-resurrect for supported coding agents. Restores
+# agent panes when a workspace/session is restored.
+resume_agents_on_restore = true
+
+[remote]
+manage_ssh_config = true
+
 [experimental]
-pane_history = false
+# Persist recent pane output to disk so the `herdr` agent skill's
+# `pane read --source recent` / `wait output` recipes work against full history.
+# NOTE: captured history may include secrets — acceptable on a single-user laptop.
+pane_history = true
+allow_nested = false
+kitty_graphics = true
