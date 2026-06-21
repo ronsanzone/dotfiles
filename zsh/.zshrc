@@ -223,3 +223,6 @@ alias kanopy-oidc=/Applications/kanopy-oidc-macos-arm64-v0.5.5
 
 # herdr
 export PATH="/Users/sanzoner/.local/bin:$PATH"
+
+# opencode
+export PATH=/Users/sanzoner/.opencode/bin:$PATH

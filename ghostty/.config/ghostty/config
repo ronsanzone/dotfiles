@@ -16,8 +16,6 @@ cursor-style-blink = false
 cursor-color = #55e0dc
 cursor-text = #171411
 adjust-cursor-thickness = 3
-custom-shader = shaders/cursor-trail.glsl
-custom-shader-animation = true
 
 window-padding-x = 10
 window-padding-y = 8
